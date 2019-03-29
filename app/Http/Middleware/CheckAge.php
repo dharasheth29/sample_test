@@ -2,9 +2,9 @@
 
 namespace App\Http\Middleware;
 
-use Closure;
 use Carbon\Carbon;
-
+use Closure;
+use Illuminate\Support\Facades\Redirect;
 
 class CheckAge
 {
@@ -17,18 +17,28 @@ class CheckAge
      */
     public function handle($request, Closure $next)
     {
-        $diff_in_days = 0;
+        /* Normal Login Validation */
         if ($request['dob']) {
-            $dob = Carbon::createFromFormat('Y-m-d', $request['dob']);
+            $dob = Carbon::createFromFormat('d/m/Y', $request['dob']);
             $today = Carbon::today();
 
             $diff_in_days = $today->diffInYears($dob);
+        } 
+        
+        /* Guest Login Validation */
+        if (isset($request['year_digit_1']) && isset($request['year_digit_2']) && isset($request['year_digit_3']) && isset($request['year_digit_4'])) {
+            $dob = $request['year_digit_1'] . '' . $request['year_digit_2'] . '' . $request['year_digit_3'] . '' . $request['year_digit_4'];
+            $today = Carbon::now();
+
+            $dob = (int) $dob;
+            $current_year = (int) $today->year;
+            $diff_in_days = $current_year - $dob;
+        } 
+       
+        if ($diff_in_days < 18) {                       
+            return redirect('redirecttoerror');            
         }
 
-        if ($diff_in_days < 18 && $diff_in_days != 0) {
-            echo 'You are not allowed for the registration as your age is under 18.<br>Please go back.';
-            exit;
-        }
         return $next($request);
     }
 }

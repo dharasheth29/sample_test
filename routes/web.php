@@ -13,12 +13,14 @@
 
 Route::get('/', function () {
     return view('welcome');
-});
+})->name('welcome');
 
 Auth::routes();
+
 Route::get('register', 'Auth\RegisterController@showRegistrationForm')->name('register');
 Route::post('register', 'Auth\RegisterController@register')->middleware('age');
 
-Route::get('/home', 'HomeController@index')->name('home');
+Route::get('home', 'HomeController@index')->name('home');
 
-Route::post('/guestlogin', 'GuestLoginController@index')->name('guestlogin');
+Route::post('guestlogin', 'GuestLoginController@store')->name('guestlogin')->middleware('age');
+Route::get('redirecttoerror', 'GuestLoginController@redirectToError');

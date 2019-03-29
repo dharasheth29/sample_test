@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\User;
+use Carbon\Carbon;
 use Illuminate\Foundation\Auth\RegistersUsers;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
@@ -48,12 +49,12 @@ class RegisterController extends Controller
      */
     protected function validator(array $data)
     {
-
         return Validator::make($data, [
-            'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
-            'password' => ['required', 'string', 'min:4', 'confirmed'],
-            'dob' => ['required', 'date', ' date_format:Y-m-d'],
+            'firstname' => ['required', 'string', 'max:255'],
+            'lastname' => ['required', 'string', 'max:255'],
+            'password' => ['required', 'string', 'min:4'],
+            'email' => ['required', 'string', 'unique:users'],
+            'dob' => ['required', 'string'],
         ]);
 
     }
@@ -65,13 +66,16 @@ class RegisterController extends Controller
      * @return \App\User
      */
     protected function create(array $data)
-    {
-
+    {       
         return User::create([
-            'name' => $data['name'],
             'email' => $data['email'],
+            'firstname' => $data['firstname'],
+            'lastname' => $data['lastname'],
+            'title' => $data['title'],
+            'mobile' => $data['mobile'],
+            'postcode' => $data['postcode'],
             'password' => Hash::make($data['password']),
-            'dob' => $data['dob'],
+            'dob' => Carbon::createFromFormat('d/m/Y', $data['dob']),
         ]);
     }
 }
